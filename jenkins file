@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'myfastapi-demo'  // You can change this in GitHub when needed
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Praveenvs848/api-demo.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('api-demo') {
+                        sh "docker build -t ${IMAGE_NAME} ."
+                    }
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh "docker run -d -p 8000:8000 --name fastapi-app ${IMAGE_NAME}"
+                }
+            }
+        }
+    }
+}
